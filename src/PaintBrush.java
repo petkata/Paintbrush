@@ -1,9 +1,9 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-//public class PaintBrush {
-//
-//	public static void main(String[] args) {
+public class PaintBrush {
+
+	public static void main(String[] args) {
 		// the board is 20x30
 		char[][] board = fillBoard();
 		
