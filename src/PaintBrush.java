@@ -14,8 +14,8 @@ public class PaintBrush {
 		
 		while(!exit){
 			System.out.println("Choose drawing item (b - brush, f - fill with color, "
-					+ "\nh - draw horizontal line, v - draw vertical line, s - 45 degree line "
-					+ "\ne - eraser, x - exit)");
+					+ "\nh - draw horizontal line, v - draw vertical line, s - 45 degree line, "
+					+ "\nr - draw rectangle, t - draw triangle, e - eraser, x - exit)");
 			char item = sc.next().charAt(0);
 			
 			
@@ -23,7 +23,7 @@ public class PaintBrush {
 			case 'b':
 				System.out.println("enter number of fields to be colored");
 				int brush = sc.nextInt();
-				System.out.println("Choose color (r -red, g - green, b - blue)");
+				System.out.println("Choose color (r -red, g - green, b - blue, etc.)");
 				char color = sc.next().charAt(0);
 				while (brush > 0) {
 					System.out.println("enter pixel X coordiante ");
@@ -44,7 +44,7 @@ public class PaintBrush {
 				boolean drawMore = true;
 				while (drawMore) {
 					int total = board.length*board[0].length;
-					System.out.println("Choose color (r -red, g - green, b - blue)");
+					System.out.println("Choose color (r -red, g - green, b - blue, etc.)");
 					color = sc.next().charAt(0);
 					
 					System.out.println("enter pixel X coordiante ");
@@ -66,7 +66,7 @@ public class PaintBrush {
 				int numLines = sc.nextInt();
 				while (numLines >0) {
 					
-					System.out.println("Choose color (r -red, g - green, b - blue)");
+					System.out.println("Choose color (r -red, g - green, b - blue, etc.)");
 					color = sc.next().charAt(0);
 					
 					System.out.println("Enter length of the line");
@@ -90,7 +90,7 @@ public class PaintBrush {
 				int numVLines = sc.nextInt();
 				while (numVLines >0) {
 					
-					System.out.println("Choose color (r -red, g - green, b - blue)");
+					System.out.println("Choose color (r -red, g - green, b - blue, etc.)");
 					color = sc.next().charAt(0);
 					
 					System.out.println("Enter length of the line");
@@ -110,14 +110,14 @@ public class PaintBrush {
 				}
 				break;
 			case 's':
-				/*
-				Check if dimensions if length > x,y or else
+				
+				//Check if dimensions if length > x,y or else
 				
 				System.out.println("How many lines would you draw?");
 				int numSLines = sc.nextInt();
 				while (numSLines >0) {
 					
-					System.out.println("Choose color (r -red, g - green, b - blue)");
+					System.out.println("Choose color (r -red, g - green, b - blue, etc.)");
 					color = sc.next().charAt(0);
 					
 					System.out.println("Enter length of the line");
@@ -137,7 +137,35 @@ public class PaintBrush {
 						numSLines += sc.nextInt();
 					}
 				} 
-				*/
+				
+				break;
+			case 'r':
+				int numRect = 1;
+				while (numRect >0) {
+					System.out.println("Choose color (r -red, g - green, b - blue, etc.)");
+					color = sc.next().charAt(0);
+					
+					System.out.println("enter X coordiante of top left corner");
+					int x = checkX(sc, 0);
+					System.out.println("enter Y coordiante of top left corner");
+					int y = checkY(sc, 0);
+					
+					System.out.println("Enter height of the rect");
+					int height = sc.nextInt();
+					System.out.println("Enter width of the rect");
+					int width = sc.nextInt();
+					
+					drawRect(board,y,x,color, width, height);
+					
+					printArray(board);
+					
+					numRect--;
+					if (numRect == 0) {
+							System.out.println("Need more rectangles? if yes type number of rectangles"
+									+ "\n if no type 0");
+							numRect += sc.nextInt();
+					}
+				}
 				break;
 			case 'e':
 				int erase = 1;
@@ -169,6 +197,22 @@ public class PaintBrush {
 		sc.close();
 		
 	}
+	private static void drawRect(char[][] board, int y, int x, char color, int width, int height) {
+		drawHLine(board,y,x,color, width);
+		drawVLine(board,y,x,color, height);
+		if (x+width-1 >= board[y].length) {
+			width = board.length - x;
+		}
+		if (y+height-1 >= board.length) {
+			height = board.length - y;
+			
+		} else {
+			drawHLine(board,y+height-1,x,color, width);
+			
+			drawVLine(board,y,x+width-1,color, height);
+		}
+		
+	}
 	private static int checkY(Scanner sc, int y) {
 		y= sc.nextInt();
 		if (y >=20 || y <0) {
@@ -189,27 +233,21 @@ public class PaintBrush {
 			}
 		}
 	
-	//Check if dimensions if length > x,y or else
 	private static void drawSLine(char[][] board, int y, int x, char color, int length, boolean isClockWise) {
+		
 		if (length == 0 ) {
 			return;
 		}
-		if (y + length >= board.length -1) {
-			if (length > board.length) {
-				length = board.length - y;
-			} else {
-				y =  board.length -1 - length;
-			}
+		if (x + length > board[y].length -1) {
+			length = board[y].length -x;
 		}
-		if (x+ length >= board[y].length -1) {
-			if (length > board[y].length) {
-				length = board[y].length -x;
-			} else {
-				x=  board[y].length -1 - length;
-			}
+		if (y + length > board.length -1) {
+			length = board.length - y;
 		}
 		if (isClockWise) {
-			board[y-length+1][x+length -1] = color;
+			board[y+length-1][x+length-1] = color;
+		} else {
+			board[y+length-1][x-length+1] = color;
 		}
 		
 		drawSLine(board, y, x, color, --length,isClockWise);
@@ -221,11 +259,7 @@ public class PaintBrush {
 			return;
 		}
 		if (y + length > board.length -1) {
-			if (length > board.length) {
 				length = board.length - y;
-			} else {
-				y =  board.length -1 - length;
-			}
 		}
 		board[y+length-1][x] = color;
 		drawVLine(board, y, x, color, --length);
@@ -269,7 +303,6 @@ public class PaintBrush {
 				}
 			}
 		} else return;
-//		board[y][x] = 'x';
 	}
 
 	private static void erase(char[][] board, int y, int x) {
@@ -309,7 +342,8 @@ public class PaintBrush {
 				isInRange = true;
 			}
 		}
-		if (y-1 >= 0 && j+1 < ma3x[y].length && (ma3x[y-1][j+1] == ' ' || ma3x[y-1][j+1] == color)) {
+		/* Commented so that single diagonal can be used as border
+		 * if (y-1 >= 0 && j+1 < ma3x[y].length && (ma3x[y-1][j+1] == ' ' || ma3x[y-1][j+1] == color)) {
 			if (ma3x[y-1][j+1] ==color) {
 				isInRange = true;
 			}
@@ -328,7 +362,7 @@ public class PaintBrush {
 			if (ma3x[y+1][j+1] ==color) {
 				isInRange = true;
 			}
-		}
+		}*/
 		return isInRange;
 	}
 
@@ -355,7 +389,8 @@ public class PaintBrush {
 					ma3x[i-1][j] =color;
 				}
 			}
-			if (i-1 >= 0 && j+1 < ma3x[i].length && (ma3x[i-1][j+1] == ' ' || ma3x[i-1][j+1] == color)) {
+			/* Commented so that single diagonal can be used as border
+			 * if (i-1 >= 0 && j+1 < ma3x[i].length && (ma3x[i-1][j+1] == ' ' || ma3x[i-1][j+1] == color)) {
 				if (ma3x[i-1][j+1] !=color) {
 					ma3x[i-1][j+1] =color;
 				}
@@ -374,7 +409,7 @@ public class PaintBrush {
 				if (ma3x[i+1][j+1] !=color) {
 					ma3x[i+1][j+1] =color;
 				}
-			}
+			}*/
 		} else {
 			return;
 		}
